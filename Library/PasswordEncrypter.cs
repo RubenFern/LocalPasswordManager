@@ -153,7 +153,7 @@ namespace Library
         }
 
 
-        public string ShowPasswordEncrypted(byte[] encrypted)
+        public string PasswordEncryptedToString(byte[] encrypted)
         {
             return Encoding.UTF8.GetString(encrypted);
         }

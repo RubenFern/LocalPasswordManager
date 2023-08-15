@@ -34,7 +34,7 @@ namespace Library
 
         public override string ToString() 
         {
-            return string.Format("%s => %s %s %s", siteName.ToUpper(), userName, email, password);
+            return $"Site: {siteName.ToUpper()}\n\tUsername: {userName}\n\tEmail: {email}\n\tPassword: {password}";
         }
     }
 }

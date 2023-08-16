@@ -1,6 +1,6 @@
 ﻿using Library;
-using System;
-using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace LocalPaswordManager
 {
@@ -8,18 +8,24 @@ namespace LocalPaswordManager
     {
         static void Main(string[] args)
         {
+            string key = "abcdefghijklmnop";
+
             string site = "Amazon";
             string email = "rr@rr.com";
             string password = "contrasena";
-            string key = "abcdefghijklmnop";
 
             PasswordEncrypter e = new PasswordEncrypter(key);
 
-            byte[] passCifrada = e.Encrypt(password);
+            Site amazon = new Site()
+            {
+                SiteName = site,
+                Email = email,
+                Password = e.Encrypt(password)
+        };
 
-            Site amazon = new Site(site, email, e.PasswordEncryptedToString(passCifrada));
+            string json = JsonSerializer.Serialize(amazon);
 
-            Console.WriteLine(amazon);
+            Console.WriteLine(json);
         }
     }
 }

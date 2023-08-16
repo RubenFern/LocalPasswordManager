@@ -75,6 +75,11 @@ namespace Library
             return password;
         }
 
+        public string Decrypt(string passwordEncrypted)
+        {
+            return this.Decrypt(Encoding.UTF8.GetBytes(passwordEncrypted));
+        }
+
 
         private byte[] EncryptPassword(string password)
         {

@@ -1,40 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Text;
 
 namespace Library
 {
     public class Site
     {
-        [Required]
-        private string siteName;
-        
-        private string userName;
+        public string SiteName { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public byte[] Password { get; set; }
 
-        [EmailAddress]
-        private string email;
-
-        [Required]
-        private string password;
-
-        public Site(string siteName, string userName, string email, string password)
+        public Site(string siteName, string userName, string email, byte[] password)
         {
-            this.siteName = siteName;
-            this.userName = userName;
-            this.email = email;
-            this.password = password;
+            this.SiteName = siteName;
+            this.UserName = userName;
+            this.Email = email;
+            this.Password = password;
         }
 
-        public Site(string siteName, string password) : this(siteName, "", "", password) { }
-        public Site(string siteName, string data, string password) : this(siteName, password) 
+        public Site() : this("", "", "", new byte[] { }) { }
+        public Site(string siteName, byte[] password) : this(siteName, "", "", password) { }
+        public Site(string siteName, string data, byte[] password) : this(siteName, password) 
         {
             if (Util.isValidEmail(data))
-                this.email = data;
+                this.Email = data;
             else
-                this.userName = data;
+                this.UserName = data;
         }
 
         public override string ToString() 
         {
-            return $"Site: {siteName.ToUpper()}\n\tUsername: {userName}\n\tEmail: {email}\n\tPassword: {password}";
+            return $"{SiteName.ToUpper()}\n\tUsername: {UserName}\n\tEmail: {Email}\n\tPassword: {Encoding.UTF8.GetString(Password)}";
         }
     }
 }

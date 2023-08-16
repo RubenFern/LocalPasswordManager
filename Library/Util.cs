@@ -1,12 +1,12 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Library
 {
     public class Util
     {
+        private const string FILE_NAME = "passwords.json";
+
         public static void WarningMessage(string message)
         {
             if (string.IsNullOrEmpty(message))
@@ -27,30 +27,27 @@ namespace Library
             return regex.IsMatch(email);
         }
 
-        public static bool SaveSite(string fileName, Site site)
+        public static bool SaveSite(Site site)
         {
-            if (string.IsNullOrEmpty(fileName))
-                throw new ArgumentNullException("El nombre del fichero no puede ser nulo.");
-
-            if (!File.Exists(fileName))
+            if (!File.Exists(FILE_NAME))
                 throw new ArgumentException("El fichero no existe.");
 
             if (site is null)
                 throw new ArgumentNullException("El sitio no puede ser nulo.");
 
             // Leo todas las contraseñas almacenadas
-            string passwordsJson = File.ReadAllText(fileName);
+            string passwordsJson = File.ReadAllText(FILE_NAME);
 
             // Fichero de contraseñas vacío
             if (string.IsNullOrEmpty(passwordsJson))
             {
-                File.WriteAllText(fileName, JsonSerializer.Serialize( new List<Site> { site } ));
+                File.WriteAllText(FILE_NAME, JsonSerializer.Serialize( new List<Site> { site } ));
 
                 return true;
             }
 
             // Guardo en una lista las contraseñas ya almacenadas
-            List<Site> sites = PasswordsToList(passwordsJson, site);
+            List<Site> sites = PasswordsToList(passwordsJson, site).ToList();
 
             sites.Add(site);
 
@@ -59,12 +56,40 @@ namespace Library
                 Console.WriteLine(s);
 #endif
 
-            File.WriteAllText(fileName, JsonSerializer.Serialize(sites));
+            File.WriteAllText(FILE_NAME, JsonSerializer.Serialize(sites));
 
             return true;
         }
 
-        private static List<T> PasswordsToList<T>(string dataJson, T site)
+        public static bool RemoveSite(Site site)
+        {
+            if (!File.Exists(FILE_NAME))
+                throw new ArgumentException("El fichero no existe.");
+
+            if (site is null)
+                throw new ArgumentNullException("El sitio no puede ser nulo.");
+
+            // Leo todas las contraseñas almacenadas
+            string passwordsJson = File.ReadAllText(FILE_NAME);
+
+            // Fichero de contraseñas vacío
+            if (string.IsNullOrEmpty(passwordsJson))
+                return false;
+
+            // ELimino la contraseña indicada
+            List<Site> sites = PasswordsToList(passwordsJson, site).Where(s => s.Id != site.Id).ToList();
+
+#if DEBUG
+            foreach (Site s in sites)
+                Console.WriteLine(s);
+#endif
+
+            File.WriteAllText(FILE_NAME, JsonSerializer.Serialize(sites));
+
+            return true;
+        }
+
+        private static IEnumerable<T> PasswordsToList<T>(string dataJson, T site)
         {
             var passwords = JsonSerializer.Deserialize<List<T>>(dataJson);
 

@@ -14,6 +14,7 @@ namespace LocalPaswordManager
 
             Site amazon = new Site()
             {
+                Id = 1,
                 SiteName = "Amazon",
                 Email = "rr@rr.com",
                 Password = e.Encrypt(password)
@@ -21,13 +22,18 @@ namespace LocalPaswordManager
 
             Site google = new Site()
             {
+                Id = 2,
                 SiteName = "Google",
                 Email = "rr2@rr.com",
                 Password = e.Encrypt(password)
             };
 
-            Util.SaveSite("passwords.json", amazon);
-            Util.SaveSite("passwords.json", google);
+            Console.WriteLine("Salvar");
+            Util.SaveSite(amazon);
+            Util.SaveSite(google);
+
+            Console.WriteLine("Borrar");
+            //Util.RemoveSite(amazon);
         }
     }
 }

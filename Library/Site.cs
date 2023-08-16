@@ -21,7 +21,7 @@ namespace Library
         public Site(string siteName, byte[] password) : this(siteName, "", "", password) { }
         public Site(string siteName, string data, byte[] password) : this(siteName, password) 
         {
-            if (Util.isValidEmail(data))
+            if (Util.IsValidEmail(data))
                 this.Email = data;
             else
                 this.UserName = data;

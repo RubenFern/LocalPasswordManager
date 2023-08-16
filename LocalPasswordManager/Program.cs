@@ -1,6 +1,4 @@
 ﻿using Library;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace LocalPaswordManager
 {
@@ -10,22 +8,26 @@ namespace LocalPaswordManager
         {
             string key = "abcdefghijklmnop";
 
-            string site = "Amazon";
-            string email = "rr@rr.com";
             string password = "contrasena";
 
             PasswordEncrypter e = new PasswordEncrypter(key);
 
             Site amazon = new Site()
             {
-                SiteName = site,
-                Email = email,
+                SiteName = "Amazon",
+                Email = "rr@rr.com",
                 Password = e.Encrypt(password)
-        };
+            };
 
-            string json = JsonSerializer.Serialize(amazon);
+            Site google = new Site()
+            {
+                SiteName = "Google",
+                Email = "rr2@rr.com",
+                Password = e.Encrypt(password)
+            };
 
-            Console.WriteLine(json);
+            Util.SaveSite("passwords.json", amazon);
+            Util.SaveSite("passwords.json", google);
         }
     }
 }

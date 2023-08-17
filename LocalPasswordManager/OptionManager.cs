@@ -10,7 +10,8 @@ namespace LocalPasswordManager
         enum Operation
         {
             READ,
-            WRITE
+            WRITE,
+            REMOVE
         }
 
         public OptionManager() 
@@ -52,7 +53,8 @@ namespace LocalPasswordManager
                     
                     break;
                 case 4:
-                    
+                    RemovePassword();
+
                     break;
                 case 5:
                     Console.WriteLine();
@@ -130,11 +132,11 @@ namespace LocalPasswordManager
         {
             List<Site> sites = Util.GetPasswords();
 
-            int id = GetId(sites);
+            int id = GetId(sites, Operation.READ);
 
             Site site = sites.Find(s => s.Id == id) ?? new Site();
 
-            if (site.Id == -1)
+            if (site is null || site.Id == -1)
                 return;
 
             string key = GetKey(Operation.READ);
@@ -144,10 +146,36 @@ namespace LocalPasswordManager
             _interface.PrintSite(site, encrypter.Decrypt(site.Password));
         }
 
-        private int GetId(List<Site> sites)
+        private void RemovePassword()
+        {
+            List<Site> sites = Util.GetPasswords();
+
+            int id = GetId(sites, Operation.REMOVE);
+
+            Site site = sites.Find(s => s.Id == id) ?? new Site();
+
+            if (site is null || site.Id == -1)
+                return;
+
+            if (Util.RemoveSite(site))
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Contraseña eliminada!!");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            else
+                Util.WarningMessage("No ha sido posible eliminar la contraseña.");
+        }
+
+        private int GetId(List<Site> sites, Operation operation)
         {
             int id;
-            Console.Write("Introduce el Id de la contraseña que quieres ver:\t");
+
+            if (operation == Operation.REMOVE)
+                Console.Write("Introduce el Id de la contraseña que quieres borrar:\t");
+            else
+                Console.Write("Introduce el Id de la contraseña que quieres ver:\t");
+
             string input = Console.ReadLine() ?? "";
 
             try
@@ -159,7 +187,7 @@ namespace LocalPasswordManager
                     Util.WarningMessage("El Id no coincide con ninguna contraseña.");
                     _interface.PrintMenu();
 
-                    id = GetId(sites);
+                    id = GetId(sites, operation);
                 }
             }
             catch (OverflowException)
@@ -167,14 +195,14 @@ namespace LocalPasswordManager
                 Util.WarningMessage("El Id es demasiado grande.");
                 _interface.PrintMenu();
 
-                id = GetId(sites);
+                id = GetId(sites, operation);
             }
             catch (FormatException)
             {
                 Util.WarningMessage("El Id introducido no es un número entero.");
                 _interface.PrintMenu();
 
-                id = GetId(sites);
+                id = GetId(sites, operation);
             }
 
             return id;

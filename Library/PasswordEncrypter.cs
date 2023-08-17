@@ -69,7 +69,6 @@ namespace Library
             catch (CryptographicException e)
             {
                 Util.WarningMessage(e.Message);
-
             }
 
             return password;

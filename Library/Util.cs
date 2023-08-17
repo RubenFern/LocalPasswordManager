@@ -47,7 +47,7 @@ namespace Library
             }
 
             // Guardo en una lista las contraseñas ya almacenadas
-            List<Site> sites = PasswordsToList(passwordsJson, site).ToList();
+            List<Site> sites = PasswordsToList(passwordsJson).ToList();
 
             sites.Add(site);
 
@@ -77,7 +77,7 @@ namespace Library
                 return false;
 
             // ELimino la contraseña indicada
-            List<Site> sites = PasswordsToList(passwordsJson, site).Where(s => s.Id != site.Id).ToList();
+            List<Site> sites = PasswordsToList(passwordsJson).Where(s => s.Id != site.Id).ToList();
 
 #if DEBUG
             foreach (Site s in sites)
@@ -89,12 +89,22 @@ namespace Library
             return true;
         }
 
-        private static IEnumerable<T> PasswordsToList<T>(string dataJson, T site)
+        public static List<Site> GetPasswords()
         {
-            var passwords = JsonSerializer.Deserialize<List<T>>(dataJson);
+            string passwordsJson = File.ReadAllText(FILE_NAME);
+
+            if (string.IsNullOrEmpty(passwordsJson))
+                return new List<Site>();
+
+            return PasswordsToList(passwordsJson).ToList();
+        }
+
+        private static IEnumerable<Site> PasswordsToList(string dataJson)
+        {
+            var passwords = JsonSerializer.Deserialize<List<Site>>(dataJson);
 
             if (passwords is null)
-                return new List<T> { site };
+                return new List<Site>();
 
             return passwords;
         }

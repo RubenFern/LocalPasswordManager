@@ -4,6 +4,7 @@ namespace LocalPasswordManager
 {
     public class Interface
     {
+        private const string ID = "ID";
         private const string SITE = "SITE";
         private const string USERNAME = "USERNAME";
         private const string EMAIL = "EMAIL";
@@ -11,10 +12,12 @@ namespace LocalPasswordManager
 
         private List<Site> sites;
         private int numCharacters;
+        private int maxCharactersId;
         private int maxCharactersSite;
         private int maxCharactersUsername;
         private int maxCharactersEmail;
         private int maxCharactersPassword;
+        private int minCharactersId;
         private int minCharactersSite;
         private int minCharactersUsername;
         private int minCharactersEmail;
@@ -31,11 +34,13 @@ namespace LocalPasswordManager
         {
             sites = Util.GetPasswords();
 
+            maxCharactersId = 4;
             maxCharactersSite = GetMaxLengthCharacterSite();
             maxCharactersUsername = GetMaxLengthCharacterUsername();
             maxCharactersEmail = GetMaxLengthCharacterEmail();
             maxCharactersPassword = GetMaxLengthCharacterPassword();
 
+            minCharactersId = 3;
             minCharactersSite = GetMinLengthCharacterSite();
             minCharactersUsername = GetMinLengthCharacterUsername();
             minCharactersEmail = GetMinLengthCharacterEmail();
@@ -55,8 +60,9 @@ namespace LocalPasswordManager
         {
             PrintBar();
 
-            Console.WriteLine(String.Format("{0}{1}{2}{3}{4}", 
+            Console.WriteLine(String.Format("{0}{1}{2}{3}{4}{5}", 
                                             PrintInicialColumn(), 
+                                            PrintColumn(maxCharactersId, ID),
                                             PrintColumn(maxCharactersSite, SITE),
                                             PrintColumn(maxCharactersUsername, USERNAME),
                                             PrintColumn(maxCharactersEmail, EMAIL),
@@ -80,13 +86,14 @@ namespace LocalPasswordManager
         public void PrintBody()
         {
             foreach (Site s in sites)
-                PrintLine(s.SiteName, s.UserName, s.Email, s.Password);
+                PrintLine(s.Id, s.SiteName, s.UserName, s.Email, s.Password);
         }
 
-        private void PrintLine(string site, string username, string email, byte[] password)
+        private void PrintLine(int id, string site, string username, string email, byte[] password)
         {
-            Console.WriteLine(String.Format("{0}{1}{2}{3}{4}", 
-                                            PrintInicialColumn(), 
+            Console.WriteLine(String.Format("{0}{1}{2}{3}{4}{5}", 
+                                            PrintInicialColumn(),
+                                            PrintColumn(maxCharactersId, id.ToString()),
                                             PrintColumn(maxCharactersSite, site),
                                             PrintColumn(maxCharactersUsername, username),
                                             PrintColumn(maxCharactersEmail, email),
@@ -135,6 +142,24 @@ namespace LocalPasswordManager
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        public void PrintSite(Site site, string password)
+        {
+            if (site is null || string.IsNullOrEmpty(password))
+                return;
+
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine($"{site.SiteName}:");
+
+            if (!site.UserName.Equals(""))
+                Console.WriteLine($"{Tab()}Username: {site.UserName}");
+
+            if (!site.Email.Equals(""))
+                Console.WriteLine($"{Tab()}Email: {site.Email}");
+
+            Console.WriteLine($"{Tab()}Password: {password}");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         private string Tab()
         {
             return "".PadRight(8, ' ');
@@ -149,11 +174,13 @@ namespace LocalPasswordManager
         {
             int numPropsClassSite = typeof(Site).GetProperties().Count();
 
-            int additionalSpace = Math.Min(maxCharactersSite - minCharactersSite, 
-                                           Math.Min(maxCharactersUsername - minCharactersUsername,
-                                           Math.Min(maxCharactersEmail - minCharactersEmail, maxCharactersPassword - minCharactersPassword)));
+            int additionalSpace = Math.Min(maxCharactersId - minCharactersId, Math.Min(maxCharactersSite - minCharactersSite, 
+                                        Math.Min(maxCharactersUsername - minCharactersUsername,
+                                        Math.Min(maxCharactersEmail - minCharactersEmail, maxCharactersPassword - minCharactersPassword))));
 
-            return maxCharactersSite + 16 + maxCharactersUsername + 16 + maxCharactersEmail + 16 + maxCharactersPassword + 16 + numPropsClassSite - additionalSpace;
+            return maxCharactersId + 16 + maxCharactersSite + 16 + 
+                   maxCharactersUsername + 16 + maxCharactersEmail + 16 + 
+                   maxCharactersPassword + 16 + numPropsClassSite - additionalSpace;
         }
 
         private int GetMaxLengthCharacterSite()

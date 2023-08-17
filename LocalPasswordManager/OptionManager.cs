@@ -1,10 +1,17 @@
 ﻿using Library;
+using System;
 
 namespace LocalPasswordManager
 {
     public class OptionManager
     {
         private Interface _interface;
+
+        enum Operation
+        {
+            READ,
+            WRITE
+        }
 
         public OptionManager() 
         { 
@@ -15,7 +22,7 @@ namespace LocalPasswordManager
 
         public void Execute()
         {
-            int option = 0;
+            int option;
 
             do
             {
@@ -26,9 +33,6 @@ namespace LocalPasswordManager
                 ExecuteOption(option);
             }
             while (option != 5);
-
-            Console.WriteLine();
-            Console.WriteLine("Hasta pronto!");
         }
 
         public void ExecuteOption(int option)
@@ -44,13 +48,16 @@ namespace LocalPasswordManager
                     
                     break;
                 case 3:
+                    ShowPassword();
                     
                     break;
                 case 4:
                     
                     break;
                 case 5:
-                    
+                    Console.WriteLine();
+                    Console.WriteLine("Hasta pronto!");
+
                     break;
             }
         }
@@ -104,7 +111,7 @@ namespace LocalPasswordManager
             string username = GetUsername();
             string email = GetEmail();
             string password = GetPassword();
-            string key = GetKey();
+            string key = GetKey(Operation.WRITE);
             
             PasswordEncrypter encrypter = new PasswordEncrypter(key);
 
@@ -117,6 +124,60 @@ namespace LocalPasswordManager
             Console.ForegroundColor = ConsoleColor.White;
 
             ShowPasswords();
+        }
+
+        private void ShowPassword()
+        {
+            List<Site> sites = Util.GetPasswords();
+
+            int id = GetId(sites);
+
+            Site site = sites.Find(s => s.Id == id) ?? new Site();
+
+            if (site.Id == -1)
+                return;
+
+            string key = GetKey(Operation.READ);
+
+            PasswordEncrypter encrypter = new PasswordEncrypter(key);
+
+            _interface.PrintSite(site, encrypter.Decrypt(site.Password));
+        }
+
+        private int GetId(List<Site> sites)
+        {
+            int id;
+            Console.Write("Introduce el Id de la contraseña que quieres ver:\t");
+            string input = Console.ReadLine() ?? "";
+
+            try
+            {
+                id = int.Parse(input);
+
+                while (!sites.Exists(s => s.Id == id))
+                {
+                    Util.WarningMessage("El Id no coincide con ninguna contraseña.");
+                    _interface.PrintMenu();
+
+                    id = GetId(sites);
+                }
+            }
+            catch (OverflowException)
+            {
+                Util.WarningMessage("El Id es demasiado grande.");
+                _interface.PrintMenu();
+
+                id = GetId(sites);
+            }
+            catch (FormatException)
+            {
+                Util.WarningMessage("El Id introducido no es un número entero.");
+                _interface.PrintMenu();
+
+                id = GetId(sites);
+            }
+
+            return id;
         }
 
         private string GetSiteName()
@@ -163,18 +224,29 @@ namespace LocalPasswordManager
             return password;
         }
 
-        private string GetKey() 
+        private string GetKey(Operation operation) 
         {
-            Console.ForegroundColor= ConsoleColor.Red;
-            Console.Write("Debes indicar una clave de 16 dígitos asociada al cifrado de la contraseña, ");
-            Console.WriteLine("CUIDADO debes recordar esta clave para poder descifrar luego la contraseña");
+            Console.ForegroundColor= ConsoleColor.DarkYellow;
+
+            if (operation == Operation.WRITE)
+            {
+                Console.Write("Debes indicar una clave de 16 dígitos asociada al cifrado de la contraseña, ");
+                Console.WriteLine("CUIDADO debes recordar esta clave para poder descifrar luego la contraseña");
+            }
+            else
+                Console.WriteLine("Debes indicar la clave de 16 dígitos que usaste al cifrar esta contraseña.");
+  
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("Clave:\t");
             string key = Console.ReadLine() ?? "";
 
             while (string.IsNullOrEmpty(key) || key.Length != 16)
             {
-                Util.WarningMessage("Debes indicar una clave de 16 dígitos asociada al cifrado de la contraseña");
+                if (operation == Operation.WRITE)
+                    Util.WarningMessage("Debes indicar una clave de 16 dígitos asociada al cifrado de la contraseña");
+                else
+                    Util.WarningMessage("Debes indicar la clave de 16 dígitos que usaste al cifrar esta contraseña.");
+
                 Console.Write("Clave:\t");
                 key = Console.ReadLine() ?? "";
             }

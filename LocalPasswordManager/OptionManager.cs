@@ -58,7 +58,7 @@ namespace LocalPasswordManager
                     break;
                 case 5:
                     Console.WriteLine();
-                    Console.WriteLine("Hasta pronto!");
+                    Util.SuccesfullMessage("Hasta pronto!");
 
                     break;
             }
@@ -128,9 +128,7 @@ namespace LocalPasswordManager
 
             Util.SaveSite(site);
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Contraseña añadida!!");
-            Console.ForegroundColor = ConsoleColor.White;
+            Util.SuccesfullMessage("Contraseña añadida!!");
 
             ShowPasswords();
         }
@@ -165,7 +163,7 @@ namespace LocalPasswordManager
                 return;
 
             if (Util.RemoveSite(site))
-                Util.InformativeMessage("Contraseña eliminada!!");
+                Util.SuccesfullMessage("Contraseña eliminada!!");
             else
                 Util.WarningMessage("No ha sido posible eliminar la contraseña.");
         }

@@ -148,17 +148,15 @@ namespace LocalPasswordManager
             if (site is null || string.IsNullOrEmpty(password))
                 return;
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine($"{site.SiteName}:");
+            Util.SuccesfullMessage($"{site.SiteName}:");
 
             if (!site.UserName.Equals(""))
-                Console.WriteLine($"{Tab()}Username: {site.UserName}");
+                Util.SuccesfullMessage($"{Tab()}Username: {site.UserName}");
 
             if (!site.Email.Equals(""))
-                Console.WriteLine($"{Tab()}Email: {site.Email}");
+                Util.SuccesfullMessage($"{Tab()}Email: {site.Email}");
 
-            Console.WriteLine($"{Tab()}Password: {password}");
-            Console.ForegroundColor = ConsoleColor.White;
+            Util.SuccesfullMessage($"{Tab()}Password: {password}");
         }
 
         private string Tab()

@@ -7,6 +7,16 @@ namespace Library
     {
         private const string FILE_NAME = "passwords.json";
 
+        public static void InformativeMessage(string message)
+        {
+            if (string.IsNullOrEmpty(message))
+                return;
+
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         public static void WarningMessage(string message)
         {
             if (string.IsNullOrEmpty(message))

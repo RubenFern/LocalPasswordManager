@@ -34,6 +34,9 @@ namespace LocalPasswordManager
         {
             sites = Util.GetPasswords();
 
+            if (sites is null || sites.Count == 0)
+                return;
+
             maxCharactersId = 4;
             maxCharactersSite = GetMaxLengthCharacterSite();
             maxCharactersUsername = GetMaxLengthCharacterUsername();
@@ -51,9 +54,7 @@ namespace LocalPasswordManager
 
         public void PrintTitle()
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("\t\t\t\t\tLOCAL PASSWORD MANAGER");
-            Console.ForegroundColor = ConsoleColor.White;
+            Util.InformativeMessage("\t\t\t\t\tLOCAL PASSWORD MANAGER");
         }
 
         public void PrintHeader()
@@ -118,7 +119,7 @@ namespace LocalPasswordManager
         public void PrintSeparator()
         {
             Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
 
             for (int i = 0; i < numCharacters + 2; i++)
                 Console.Write("=");

@@ -102,6 +102,13 @@ namespace LocalPasswordManager
         private void ShowPasswords()
         {
             _interface.UpdatePasswords();
+
+            if (Util.GetPasswords().Count == 0)
+            {
+                Util.InformativeMessage("No hay ninguna contraseña guardada.");
+                return;
+            }
+
             _interface.PrintHeader();
             _interface.PrintBody();
             _interface.PrintSeparator();
@@ -158,11 +165,7 @@ namespace LocalPasswordManager
                 return;
 
             if (Util.RemoveSite(site))
-            {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("Contraseña eliminada!!");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+                Util.InformativeMessage("Contraseña eliminada!!");
             else
                 Util.WarningMessage("No ha sido posible eliminar la contraseña.");
         }
@@ -254,17 +257,14 @@ namespace LocalPasswordManager
 
         private string GetKey(Operation operation) 
         {
-            Console.ForegroundColor= ConsoleColor.DarkYellow;
-
             if (operation == Operation.WRITE)
             {
-                Console.Write("Debes indicar una clave de 16 dígitos asociada al cifrado de la contraseña, ");
-                Console.WriteLine("CUIDADO debes recordar esta clave para poder descifrar luego la contraseña");
+                Util.InformativeMessage("Debes indicar una clave de 16 dígitos asociada al cifrado de la contraseña, ");
+                Util.InformativeMessage("CUIDADO debes recordar esta clave para poder descifrar luego la contraseña");
             }
             else
-                Console.WriteLine("Debes indicar la clave de 16 dígitos que usaste al cifrar esta contraseña.");
+                Util.InformativeMessage("Debes indicar la clave de 16 dígitos que usaste al cifrar esta contraseña.");
   
-            Console.ForegroundColor = ConsoleColor.White;
             Console.Write("Clave:\t");
             string key = Console.ReadLine() ?? "";
 

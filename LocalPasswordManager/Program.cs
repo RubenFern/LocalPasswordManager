@@ -6,11 +6,9 @@ namespace LocalPaswordManager
     {
         static void Main(string[] args)
         {
-            Interface _interface = new Interface();
+            OptionManager optionManager = new OptionManager();
 
-            _interface.LoadInterface();
-
-
+            optionManager.Execute();
         }
     }
 }

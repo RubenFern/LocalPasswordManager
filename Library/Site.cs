@@ -31,7 +31,7 @@ namespace Library
 
         public override string ToString() 
         {
-            return $"{SiteName.ToUpper()}\n\tUsername: {UserName}\n\tEmail: {Email}\n\tPassword: {Encoding.UTF8.GetString(Password)}";
+            return $"{SiteName.ToUpper()}\n\tUsername: {UserName}\n\tEmail: {Email}\n\tPassword: {Convert.ToBase64String(Password)}";
         }
     }
 }

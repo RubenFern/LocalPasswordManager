@@ -52,8 +52,8 @@ namespace Library
             sites.Add(site);
 
 #if DEBUG
-            foreach (Site s in sites)
-                Console.WriteLine(s);
+            /*foreach (Site s in sites)
+                Console.WriteLine(s);*/
 #endif
 
             File.WriteAllText(FILE_NAME, JsonSerializer.Serialize(sites));
@@ -80,8 +80,8 @@ namespace Library
             List<Site> sites = PasswordsToList(passwordsJson).Where(s => s.Id != site.Id).ToList();
 
 #if DEBUG
-            foreach (Site s in sites)
-                Console.WriteLine(s);
+            /*foreach (Site s in sites)
+                Console.WriteLine(s);*/
 #endif
 
             File.WriteAllText(FILE_NAME, JsonSerializer.Serialize(sites));

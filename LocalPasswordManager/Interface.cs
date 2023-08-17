@@ -1,8 +1,4 @@
-﻿using System;
-using System.Numerics;
-using System.Text;
-using Library;
-using Microsoft.VisualBasic.FileIO;
+﻿using Library;
 
 namespace LocalPasswordManager
 {
@@ -28,6 +24,13 @@ namespace LocalPasswordManager
         {
             sites = Util.GetPasswords();
 
+            UpdatePasswords();
+        }
+
+        public void UpdatePasswords()
+        {
+            sites = Util.GetPasswords();
+
             maxCharactersSite = GetMaxLengthCharacterSite();
             maxCharactersUsername = GetMaxLengthCharacterUsername();
             maxCharactersEmail = GetMaxLengthCharacterEmail();
@@ -41,34 +44,14 @@ namespace LocalPasswordManager
             numCharacters = CalculateCharacterNumber();
         }
 
-        public void LoadInterface()
-        {
-            PrintTitle();
-            PrintHeader();
-            PrintBody();
-            PrintSeparator();
-
-            int option = 0;
-
-            do
-            {
-                PrintMenu();
-
-                option = ReadOption();
-            }
-            while (option != 5);
-
-            
-        }
-
-        private void PrintTitle()
+        public void PrintTitle()
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\t\t\t\t\tLOCAL PASSWORD MANAGER");
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        private void PrintHeader()
+        public void PrintHeader()
         {
             PrintBar();
 
@@ -82,7 +65,7 @@ namespace LocalPasswordManager
             PrintBar();
         }
 
-        private void PrintBar()
+        public void PrintBar()
         {
             Console.Write("+");
 
@@ -94,20 +77,20 @@ namespace LocalPasswordManager
             Console.WriteLine();
         }
 
-        private void PrintBody()
+        public void PrintBody()
         {
             foreach (Site s in sites)
-                PrintLine(s.SiteName, s.UserName, s.Email, Encoding.UTF8.GetString(s.Password));
+                PrintLine(s.SiteName, s.UserName, s.Email, s.Password);
         }
 
-        private void PrintLine(string site, string username, string email, string password)
+        private void PrintLine(string site, string username, string email, byte[] password)
         {
             Console.WriteLine(String.Format("{0}{1}{2}{3}{4}", 
                                             PrintInicialColumn(), 
                                             PrintColumn(maxCharactersSite, site),
                                             PrintColumn(maxCharactersUsername, username),
                                             PrintColumn(maxCharactersEmail, email),
-                                            PrintColumn(maxCharactersPassword, password)));
+                                            PrintColumn(maxCharactersPassword, Convert.ToBase64String(password))));
 
             PrintBar();
         }
@@ -125,7 +108,7 @@ namespace LocalPasswordManager
             return $"{Tab()}{str}{Tab()}|";
         }
 
-        private void PrintSeparator()
+        public void PrintSeparator()
         {
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Green;
@@ -137,10 +120,10 @@ namespace LocalPasswordManager
             Console.WriteLine();
         }
 
-        private void PrintMenu()
+        public void PrintMenu()
         {
             Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Gray;
 
             Console.WriteLine("Introduzca el número de operación que desee:");
             Console.WriteLine("1 - Listar todas las contraseñas");
@@ -150,41 +133,6 @@ namespace LocalPasswordManager
             Console.WriteLine("5 - Salir");
 
             Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        private int ReadOption()
-        {
-            int option;
-            string input = Console.ReadLine() ?? "";
-
-            try
-            {
-                option = int.Parse(input);
-
-                while (option < 1 || option > 5)
-                {
-                    Util.WarningMessage("Opción no reconocida");
-                    PrintMenu();
-
-                    option = ReadOption();
-                }
-            }
-            catch (OverflowException)
-            {
-                Util.WarningMessage("El número debe de estar entre las opciones 1 y 5.");
-                PrintMenu();
-
-                option = ReadOption();
-            }
-            catch (FormatException)
-            {
-                Util.WarningMessage("El valor introducido no es un número entero.");
-                PrintMenu();
-
-                option = ReadOption();
-            }
-
-            return option;
         }
 
         private string Tab()
@@ -240,12 +188,12 @@ namespace LocalPasswordManager
 
         private int GetMaxLengthCharacterPassword()
         {
-            return Math.Max(PASSWORD.Length, sites.Max(s => s.Password.Length));
+            return Math.Max(PASSWORD.Length, sites.Max(s => Convert.ToBase64String(s.Password).Length));
         }
 
         private int GetMinLengthCharacterPassword()
         {
-            return Math.Min(PASSWORD.Length, sites.Min(s => s.Password.Length));
+            return Math.Min(PASSWORD.Length, sites.Min(s => Convert.ToBase64String(s.Password).Length));
         }
 
     }
